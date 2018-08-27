@@ -1,19 +1,16 @@
-const puppeteer = require("puppeteer");
 const sessionFactory = require('./factories/sessionFactory')
 const userFactory = require('./factories/userFactory')
-let browser, page;
+const Page = require('./helpers/page')
+let page;
 
 // automatically runs before each test...note how we define variables above to extend scope to file
 beforeEach(async () => {
-    browser = await puppeteer.launch({
-        headless: false
-    });
-    page = await browser.newPage()
+    page = await Page.build()
     await page.goto("localhost:3000")
 });
 
 afterEach(async () => {
-    await browser.close()
+    await page.close()
 });
 
 test("Header has correct text", async () => {
