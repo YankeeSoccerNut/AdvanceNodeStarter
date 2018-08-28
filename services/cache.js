@@ -2,8 +2,8 @@ const mongoose = require('mongoose')
 const redis = require("redis");
 const util = require("util");
 
-const redisUrl = "redis://localhost:6379";
-const redisClient = redis.createClient(redisUrl);
+const keys = require('../config/keys')
+const redisClient = redis.createClient(keys.redisUrl);
 
 // redis does not return promise, it expects a callback
 // we can use the utility function promisify to wrap a function so that it returns a promise for the callback
