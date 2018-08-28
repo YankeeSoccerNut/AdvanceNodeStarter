@@ -39,9 +39,7 @@ class CustomPage {
 
         // Note...we go to the page where we would go after successful authentication
         await this.page.goto('localhost:3000/blogs')
-
         await this.page.waitFor('a[href="/auth/logout"]')
-
     }
 
     async getContentsOf(selector) {

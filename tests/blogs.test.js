@@ -11,10 +11,51 @@ afterEach(async () => {
     await page.close()
 });
 
-test("Logged in user can see blog create form", async () => {
-    await page.login()
-    await page.click('a[href="/blogs/new"]')
+describe('When logged in', async () => {
+    beforeEach(async () => {
+        await page.login()
+        await page.click('a[href="/blogs/new"]')
+    })
 
-    const label = await page.getContentsOf('form label')
-    expect(label).toEqual("Blog Title")
-});
+    test("User can see the blog create form", async () => {
+        const label = await page.getContentsOf('form label')
+        expect(label).toEqual("Blog Title")
+    })
+
+    describe('And using INVALID form inputs', async () => {
+        beforeEach(async () => {
+            await page.click('form button')
+        })
+        test('the form shows an error message', async () => {
+            const titleError = await page.getContentsOf('.title .red-text')
+            const contentError = await page.getContentsOf('.content .red-text')
+
+            expect(titleError).toEqual('You must provide a value')
+            expect(contentError).toEqual('You must provide a value')
+        })
+    })
+
+    describe('And using VALID form inputs', async () => {
+        beforeEach(async () => {
+            await page.type('.title input', 'My Testing Title')
+            await page.type('.content input', 'My Testing Content')
+            await page.click('form button')
+        })
+        test('submitting the form takes the user to review screen', async () => {
+            const text = await page.getContentsOf('form h5')
+            expect(text).toEqual('Please confirm your entries')
+        })
+        test('submitting then saving adds blog to the index', async () => {
+            await page.click('button.green')
+            await page.waitFor('.card')
+
+            const title = await page.getContentsOf('.card-title')
+            const content = await page.getContentsOf('p')
+
+            expect(title).toEqual('My Testing Title')
+            expect(content).toEqual('My Testing Content')
+        })
+
+    })
+
+})
